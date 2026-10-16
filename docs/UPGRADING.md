@@ -42,7 +42,7 @@ plan, policy/public/private transitions, versioning, rule updates/removal, impor
 Verify the configured region is used for both the endpoint and request signing.
 Test nonempty-bucket deletion only with disposable objects and an explicit force_destroy opt-in.
 Keep locking tests separate: retention can prevent teardown even with force destruction enabled.
-Never use production Loki/Tempo buckets for destructive acceptance tests.
+Never use production buckets for destructive acceptance tests.
 
 Changing exact bucket names replaces storage without migrating data. Preserve map keys to preserve
 Terraform resource addresses. Object locking is irreversible and the provider does not replace a
