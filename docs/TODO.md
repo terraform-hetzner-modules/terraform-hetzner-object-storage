@@ -1,11 +1,4 @@
-# ✅ Terraform &lt;Provider&gt; Modules - `TODO`s
+# Follow-up work
 
-## ➕ Additions
-
-## ✏️ Planned Changes
-
-## 💡 Ideas
-
-## 🔗 Links
-
-## 🗒️ Notes
+- Run live acceptance for create, no-change plan, updates, import, and teardown against Hetzner.
+- Revisit API restrictions when Hetzner adds supported S3 features or credential management.

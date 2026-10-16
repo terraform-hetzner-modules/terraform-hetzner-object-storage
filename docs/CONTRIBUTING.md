@@ -31,7 +31,7 @@ Manual Release runs may omit the SHA to release the selected branch head; use a 
 
 Semantic Release uses `.releaserc` and conventional commits to publish release notes, tags,
 and the changelog. Configure repository rules to allow its authorized release writes.
-Finish replacing template placeholders and add meaningful module tests before enabling releases.
+Add meaningful module tests before releasing changes.
 
 ## Commit Message Format
 
