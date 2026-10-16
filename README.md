@@ -6,9 +6,49 @@ Supports versioning, bucket policies, CORS, lifecycle rules, and object-lock ret
 
 ## Usage
 
+Copy this module configuration into `main.tf` and replace `my-company-storage-` with your own unique
+prefix. Add the [provider configuration](#provider-configuration) below in `versions.tf`.
+
+```hcl
+module "storage" {
+  source = "terraform-hetzner-modules/object-storage/hetzner"
+
+  name_prefix = "my-company-storage-"
+  defaults = {
+    versioning = { status = "Enabled" }
+  }
+  buckets = {
+    documents = {}
+    uploads = {
+      versioning = { enabled = false }
+      cors_rules = [{
+        allowed_origins = ["https://example.com"]
+        allowed_methods = ["GET", "PUT"]
+        allowed_headers = ["Content-Type"]
+        expose_headers  = ["ETag"]
+        max_age_seconds = 3600
+      }]
+      lifecycle_rules = [{
+        id                                = "abort-incomplete-uploads"
+        abort_incomplete_multipart_upload = { days_after_initiation = 7 }
+      }]
+    }
+  }
+}
+
+output "bucket_names" {
+  value = module.storage.names
+}
+```
+
+Both buckets are private. `documents` inherits versioning; `uploads` disables it and adds browser
+access rules and incomplete-upload cleanup. CORS does not grant access: browser requests still need
+authentication. Replace the example origin with your own domain.
+
+## Provider configuration
+
 Create S3 credentials in the Hetzner Console and export the access key as `MINIO_USER` and the secret
-key as `MINIO_PASSWORD`. Copy the following into `main.tf`, replace `my-company-storage-` with your
-own unique prefix, then run `terraform init`, `terraform plan`, and `terraform apply`.
+key as `MINIO_PASSWORD`. Put the following in your calling root's `versions.tf`:
 
 ```hcl
 terraform {
@@ -28,28 +68,12 @@ provider "minio" {
   skip_bucket_tagging = true
   s3_compat_mode      = true
 }
-
-module "storage" {
-  source = "terraform-hetzner-modules/object-storage/hetzner"
-
-  name_prefix = "my-company-storage-"
-  defaults = {
-    versioning = { status = "Enabled" }
-  }
-  buckets = {
-    documents = {}
-    uploads   = { versioning = { enabled = false } }
-  }
-}
-
-output "bucket_names" {
-  value = module.storage.names
-}
 ```
 
-This creates two private buckets; only `documents` has managed versioning. Credentials and provider
-configuration belong in the calling root. The provider connects directly to Hetzner's S3 API; no
-MinIO server is required. See [Hetzner's Terraform guide](https://docs.hetzner.com/storage/object-storage/getting-started/creating-a-bucket-minio-terraform/)
+With both files in place, run `terraform init`, `terraform plan`, and `terraform apply`.
+Credentials and provider configuration belong in the calling root. The provider connects directly
+to Hetzner's S3 API; no MinIO server is required. See
+[Hetzner's Terraform guide](https://docs.hetzner.com/storage/object-storage/getting-started/creating-a-bucket-minio-terraform/)
 for credential setup and endpoint details.
 
 ## Examples
